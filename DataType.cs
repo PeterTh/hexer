@@ -169,15 +169,14 @@ namespace hexer
         public int Address { get; internal set; }
         public int Length { get; internal set; }
 
-        public DataFragment(int address, byte[] source, int argLength = MAX_LENGTH)
+        public DataFragment(int address, byte[] source, int posInSource = 0, int argLength = MAX_LENGTH)
         {
-            if (address / 8 >= source.Length) address = (source.Length - 1) * 8;
             Address = address;
-            int remainder = source.Length - address / 8;
+            int remainder = source.Length - posInSource;
             int length = Math.Min(argLength, remainder);
             Length = length;
             Data = new Byte[MAX_LENGTH];
-            Array.Copy(source, address / 8, Data, 0, length);
+            Array.Copy(source, posInSource, Data, 0, length);
         }
     }
 }

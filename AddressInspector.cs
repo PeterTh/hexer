@@ -12,6 +12,10 @@ namespace hexer
 {
     public partial class AddressInspector : UserControl
     {
+        public delegate void EditedData(DataFragment df);
+        [Description("Fired when data is edited"), Category("Hex")]
+        public event EditedData DataChanged = delegate { };
+
         private string caption = "Memory";
         [Description("Caption"), Category("Hex")]
         public string Caption
@@ -100,6 +104,9 @@ namespace hexer
                     textBox.Location = new System.Drawing.Point(textBoxX, y);
                     textBox.Name = dt.Name + "TextBox";
                     textBox.Size = new System.Drawing.Size(208, 20);
+                    textBox.KeyDown += TextBox_KeyDown;
+                    textBox.Tag = dt;
+                    textBox.AcceptsReturn = false;
                     Controls.Add(textBox);
                     // label
                     var lbl = new Label();
@@ -116,6 +123,19 @@ namespace hexer
             
             ResumeLayout(false);
             PerformLayout();
+        }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                var tb = sender as TextBox;
+                var dt = tb.Tag as DataType;
+
+                var editedFragment = dt.EncodeString(target.Address, tb.Text);
+                editedFragment.Length = dt.NumBytes;
+                DataChanged(editedFragment);
+            }
         }
     }
 }

@@ -50,7 +50,7 @@ namespace hexer
             set
             {
                 fileName = value;
-                if (fileName.Length > 0) loadFile(fileName);
+                if (fileName.Length > 0) LoadFile(fileName);
             }
         }
 
@@ -134,7 +134,7 @@ namespace hexer
         }
 
 
-        private void loadFile(string fileName)
+        private void LoadFile(string fileName)
         {
             fileBytes = File.ReadAllBytes(fileName);
             totalLines = fileBytes.Length / NumBytesInLine;
@@ -142,6 +142,16 @@ namespace hexer
             vScrollBar.Maximum = totalLines;
             vScrollBar.Value = 0;
             Refresh();
+        }
+
+        public void SaveToFile(string fileName)
+        {
+            this.fileName = fileName;
+            File.WriteAllBytes(fileName, fileBytes);
+        }
+        public void SaveToFile()
+        {
+            File.WriteAllBytes(fileName, fileBytes);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -188,7 +198,7 @@ namespace hexer
                         {
                             var drawPoint = new PointF(point.X, point.Y);
                             drawPoint.Y -= 2;
-                            g.DrawString(marker.Type.DecodeToString(new DataFragment(address, fileBytes, marker.NumBytes)), vFont, Brushes.White, drawPoint);
+                            g.DrawString(marker.Type.DecodeToString(new DataFragment(address, fileBytes, pos, marker.NumBytes)), vFont, Brushes.White, drawPoint);
                             drawPoint.Y += 13;
                             g.DrawString(marker.Type.ShortName, tFont, Brushes.Orange, drawPoint);
                             skipAddresses = marker.NumBytes - 1;
@@ -278,16 +288,16 @@ namespace hexer
         public DataFragment GetDataAt(Point loc)
         {
             var addr = GetAddressAt(loc);
-            return new DataFragment(GetAddressAt(loc), fileBytes);
+            return new DataFragment(addr, fileBytes, addr / 8);
         }
 
         internal DataFragment GetSelectedData()
         {
-            return new DataFragment(SelectedAddress, fileBytes);
+            return new DataFragment(SelectedAddress, fileBytes, SelectedAddress / 8);
         }
         internal DataFragment GetHoverData()
         {
-            return new DataFragment(HoverAddress, fileBytes);
+            return new DataFragment(HoverAddress, fileBytes, HoverAddress / 8);
         }
 
         public void NavigateToAddress(int address)
@@ -334,6 +344,12 @@ namespace hexer
                 NavigateToAddress(idx*8);
             }
             return idx >= 0;
+        }
+
+        internal void ApplyEdit(DataFragment data)
+        {
+            Array.Copy(data.Data, 0, fileBytes, data.Address / 8, data.Length);
+            NavigateToAddress();
         }
     }
 

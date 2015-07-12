@@ -17,7 +17,14 @@ namespace hexer
         {
             InitializeComponent();
             Application.AddMessageFilter(this);
+            selectedAddressInspector.DataChanged += SelectedAddressInspector_DataChanged;
             Refresh();
+        }
+
+        private void SelectedAddressInspector_DataChanged(DataFragment data)
+        {
+            hexView.ApplyEdit(data);
+            selectedAddressInspector.Target = hexView.GetSelectedData();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -91,6 +98,23 @@ namespace hexer
         private void hexView_HoverAddressChanged(object sender, EventArgs e)
         {
             hoverAddressInspector.Target = hexView.GetHoverData();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sfd = new SaveFileDialog();
+            sfd.FileName = hexView.FileName;
+            if(sfd.ShowDialog() == DialogResult.OK)
+            {
+                hexView.SaveToFile(sfd.FileName);
+                toolStripStatusLabel.Text = "Saved to " + sfd.FileName;
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            hexView.SaveToFile();
+            toolStripStatusLabel.Text = "Saved to " + hexView.FileName;
         }
     }
 }
