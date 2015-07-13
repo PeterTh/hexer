@@ -24,15 +24,14 @@ namespace hexer
         private float xStart, yStart;
         private SizeF byteSize;
 
-        private MarkerRepository markers = new MarkerRepository();
-
         private int startLine = 0, totalLines = 1;
         private int StartLine
         {
             get { return startLine; }
-            set {
+            set
+            {
                 if (value < 0) startLine = 0;
-                else if (value >= totalLines-1) startLine = totalLines - 1;
+                else if (value >= totalLines - 1) startLine = totalLines - 1;
                 else startLine = value;
                 vScrollBar.Value = startLine;
                 Refresh();
@@ -40,7 +39,7 @@ namespace hexer
         }
 
         private int visibleLines = 1;
-        private Interval<int> visibleAddresses = new Interval<int>(0,0);
+        private Interval<int> visibleAddresses = new Interval<int>(0, 0);
 
         private string fileName = @"E:\Steam\userdata\31474140\251150\remote\fc\SVDAT149.SAV";
         [Description("Hex file name"), Category("Hex")]
@@ -98,14 +97,17 @@ namespace hexer
         public HexView()
         {
             InitializeComponent();
-            
-            foreach(var dt in DataType.GetKnownDataTypes())
+
+            foreach (var dt in DataType.GetKnownDataTypes())
             {
                 var markAs = new ToolStripMenuItem(dt.Name);
                 markAs.Click += MarkAs_Click;
                 markAs.Tag = dt;
                 markAsToolStripMenuItem.DropDownItems.Add(markAs);
             }
+
+            SelectedAddress = -1;
+            HoverAddress = -1;
 
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
             SetStyle(ControlStyles.UserMouse, true);
@@ -116,7 +118,7 @@ namespace hexer
         {
             var ts = sender as ToolStripMenuItem;
             var dt = ts.Tag as DataType;
-            markers.AddMarker(SelectedAddress, dt);
+            MarkerRepository.Instance.AddMarker(SelectedAddress, dt);
         }
 
         private void ComputeMetrics()
@@ -133,7 +135,6 @@ namespace hexer
             visibleAddresses.Max = visibleAddresses.Min + visibleLines * numBytesInLine * 8;
         }
 
-
         private void LoadFile(string fileName)
         {
             fileBytes = File.ReadAllBytes(fileName);
@@ -141,6 +142,8 @@ namespace hexer
             vScrollBar.Minimum = 0;
             vScrollBar.Maximum = totalLines;
             vScrollBar.Value = 0;
+            SelectedAddress = -1;
+            HoverAddress = -1;
             Refresh();
         }
 
@@ -193,7 +196,7 @@ namespace hexer
                         }
 
                         // handle markers
-                        var marker = markers.GetMarker(address);
+                        var marker = MarkerRepository.Instance.GetMarker(address);
                         if (marker != null)
                         {
                             var drawPoint = new PointF(point.X, point.Y);
@@ -207,7 +210,7 @@ namespace hexer
                             drawPoint.X += measure.Width + hSpacing;
                             drawPoint.Y = point.Y + 15;
                             var point2 = new PointF(point.X + ColumnWidth, drawPoint.Y);
-                            g.DrawLine(new Pen(Brushes.DarkOrange), drawPoint, point2);                            
+                            g.DrawLine(new Pen(Brushes.DarkOrange), drawPoint, point2);
                             continue;
                         }
 
@@ -247,11 +250,18 @@ namespace hexer
             StartLine -= offset;
         }
 
+        // Terrible hack to fix initial form drawing 
+        private int formInited = 0;
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
             var p = new Point(e.X, e.Y);
             HoverAddress = GetAddressAt(p);
+            if (formInited < 2)
+            {
+                FindForm().Refresh();
+                ++formInited;
+            }
         }
 
         protected override void OnMouseClick(MouseEventArgs e)
@@ -259,7 +269,7 @@ namespace hexer
             base.OnMouseClick(e);
             var p = new Point(e.X, e.Y);
             SelectedAddress = GetAddressAt(p);
-            if(e.Button == MouseButtons.Right) contextMenuStrip.Show(PointToScreen(p));
+            if (e.Button == MouseButtons.Right) contextMenuStrip.Show(PointToScreen(p));
         }
 
         private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
@@ -275,7 +285,7 @@ namespace hexer
             int yidx = (addr / 8) / numBytesInLine;
             return new PointF(xStart + xidx * ColumnWidth, yStart + yidx * LineHeight);
         }
-        
+
         public int GetAddressAt(Point loc)
         {
             int address = numBytesInLine * StartLine * 8; // start
@@ -291,24 +301,23 @@ namespace hexer
             return new DataFragment(addr, fileBytes, addr / 8);
         }
 
-        internal DataFragment GetSelectedData()
+        public DataFragment GetDataAt(int address)
         {
-            return new DataFragment(SelectedAddress, fileBytes, SelectedAddress / 8);
+            if (address < 0 || address >= fileBytes.Length * 8) return new DataFragment();
+            return new DataFragment(address, fileBytes, address / 8);
         }
-        internal DataFragment GetHoverData()
-        {
-            return new DataFragment(HoverAddress, fileBytes, HoverAddress / 8);
-        }
+        public DataFragment GetSelectedData() { return GetDataAt(SelectedAddress); }
+        public DataFragment GetHoverData() { return GetDataAt(HoverAddress); }
 
         public void NavigateToAddress(int address)
         {
             if (address < 0) address = 0;
-            if (address/8 >= fileBytes.Length) address = fileBytes.Length-1;
+            if (address / 8 >= fileBytes.Length) address = fileBytes.Length - 1;
             SelectedAddress = address;
 
-            if(!visibleAddresses.Contains(selectedAddress))
+            if (!visibleAddresses.Contains(SelectedAddress))
             {
-                StartLine = ((address / 8) / numBytesInLine) - (visibleLines/2);
+                StartLine = ((address / 8) / numBytesInLine) - (visibleLines / 2);
             }
         }
         internal void NavigateToAddress()
@@ -339,9 +348,9 @@ namespace hexer
             byte[] target = new byte[toSearch.Length];
             Array.Copy(toSearch.Data, target, toSearch.Length);
             int idx = StartingIndex(fileBytes, target);
-            if(idx >= 0)
+            if (idx >= 0)
             {
-                NavigateToAddress(idx*8);
+                NavigateToAddress(idx * 8);
             }
             return idx >= 0;
         }
@@ -350,63 +359,6 @@ namespace hexer
         {
             Array.Copy(data.Data, 0, fileBytes, data.Address / 8, data.Length);
             NavigateToAddress();
-        }
-    }
-
-    [Serializable()]
-    public class DataMarker : IComparable<DataMarker>
-    {
-        public DataType Type
-        {
-            get;
-            internal set;
-        }
-        public int Address
-        {
-            get;
-            internal set;
-        }
-        public int NumBytes
-        {
-            get;
-            set;
-        }
-        public string Note
-        {
-            get;
-            internal set;
-        }
-
-        public DataMarker(int addr, DataType dt)
-        {
-            Address = addr;
-            Type = dt;
-            NumBytes = dt.NumBytes;
-            Note = "Unnamed";
-        }
-
-        public int CompareTo(DataMarker other)
-        {
-            return Address.CompareTo(other.Address);
-        }
-    }
-
-    [Serializable()]
-    public class MarkerRepository
-    {
-        private SortedList<int, DataMarker> markers = new SortedList<int, DataMarker>();
-
-        public void AddMarker(int addr, DataType dt)
-        {
-            markers.Add(addr, new DataMarker(addr, dt));
-        }
-
-        public DataMarker GetMarker(int addr)
-        {
-            if (markers.ContainsKey(addr)) {
-                return markers[addr];
-            }
-            return null;
         }
     }
 }

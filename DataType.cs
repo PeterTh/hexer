@@ -4,10 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace hexer
 {
-    public class DataType
+    public class DataType : IXmlSerializable
     {
         public bool Seperator { get; internal set; } = false;
 
@@ -38,6 +41,9 @@ namespace hexer
         {
             Name = name;
         }
+
+        // For serialization
+        private DataType() { }
 
         public override string ToString()
         {
@@ -159,9 +165,26 @@ namespace hexer
                 return Convert.ToInt32(s);
             }
         }
-    }
 
-    [Serializable()]
+        #region XML Serialization
+        public XmlSchema GetSchema() { return null; }
+        public void ReadXml(XmlReader reader)
+        {
+            var dt = FromString(reader["type"]);
+            Seperator = dt.Seperator;
+            Name = dt.Name;
+            ShortName = dt.ShortName;
+            NumBytes = dt.NumBytes;
+            decoder = dt.decoder;
+            encoder = dt.encoder;
+        }
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString("type", Name);
+        }
+        #endregion
+    }
+    
     public class DataFragment
     {
         public const int MAX_LENGTH = 128;
@@ -177,6 +200,12 @@ namespace hexer
             Length = length;
             Data = new Byte[MAX_LENGTH];
             Array.Copy(source, posInSource, Data, 0, length);
+        }
+        public DataFragment()
+        {
+            Address = 0;
+            Length = 0;
+            Data = new Byte[MAX_LENGTH];
         }
     }
 }

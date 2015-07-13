@@ -75,9 +75,7 @@ namespace hexer
         public AddressInspector()
         {
             InitializeComponent();
-
-            SuspendLayout();
-            
+                        
             int y = 29;
             int lblX = 5;
             int textBoxX = 50;
@@ -120,9 +118,6 @@ namespace hexer
                     y += 20;
                 }
             }
-            
-            ResumeLayout(false);
-            PerformLayout();
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)

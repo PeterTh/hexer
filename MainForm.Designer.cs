@@ -33,16 +33,20 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.navigateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.markersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openMarkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMarkersAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMarkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hoverAddressInspector = new hexer.AddressInspector();
             this.selectedAddressInspector = new hexer.AddressInspector();
             this.hexView = new hexer.HexView();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
@@ -71,7 +75,8 @@
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.navigateToolStripMenuItem});
+            this.navigateToolStripMenuItem,
+            this.markersToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(1111, 24);
@@ -95,6 +100,22 @@
             this.openToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.saveToolStripMenuItem.Text = "Save";
             // 
             // navigateToolStripMenuItem
             // 
@@ -150,6 +171,44 @@
             this.mainSplitContainer.SplitterDistance = 220;
             this.mainSplitContainer.TabIndex = 3;
             // 
+            // markersToolStripMenuItem
+            // 
+            this.markersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openMarkersToolStripMenuItem,
+            this.saveMarkersAsToolStripMenuItem,
+            this.saveMarkersToolStripMenuItem});
+            this.markersToolStripMenuItem.Name = "markersToolStripMenuItem";
+            this.markersToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.markersToolStripMenuItem.Text = "Markers";
+            // 
+            // openMarkersToolStripMenuItem
+            // 
+            this.openMarkersToolStripMenuItem.Name = "openMarkersToolStripMenuItem";
+            this.openMarkersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.O)));
+            this.openMarkersToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.openMarkersToolStripMenuItem.Text = "Open Markers";
+            this.openMarkersToolStripMenuItem.Click += new System.EventHandler(this.openMarkersToolStripMenuItem_Click);
+            // 
+            // saveMarkersAsToolStripMenuItem
+            // 
+            this.saveMarkersAsToolStripMenuItem.Name = "saveMarkersAsToolStripMenuItem";
+            this.saveMarkersAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveMarkersAsToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.saveMarkersAsToolStripMenuItem.Text = "Save Markers As...";
+            this.saveMarkersAsToolStripMenuItem.Click += new System.EventHandler(this.saveMarkersAsToolStripMenuItem_Click);
+            // 
+            // saveMarkersToolStripMenuItem
+            // 
+            this.saveMarkersToolStripMenuItem.Name = "saveMarkersToolStripMenuItem";
+            this.saveMarkersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveMarkersToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.saveMarkersToolStripMenuItem.Text = "Save Markers";
+            this.saveMarkersToolStripMenuItem.Click += new System.EventHandler(this.saveMarkersToolStripMenuItem_Click);
+            // 
             // hoverAddressInspector
             // 
             this.hoverAddressInspector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -187,23 +246,6 @@
             this.hexView.TabIndex = 0;
             this.hexView.HoverAddressChanged += new System.EventHandler(this.hexView_HoverAddressChanged);
             this.hexView.SelectedAddressChanged += new System.EventHandler(this.hexView_SelectedAddressChanged);
-            // 
-            // saveAsToolStripMenuItem
-            // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -246,6 +288,10 @@
         private System.Windows.Forms.ToolStripMenuItem goToSelectedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem markersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openMarkersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveMarkersAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveMarkersToolStripMenuItem;
     }
 }
 

@@ -27,15 +27,6 @@ namespace hexer
             selectedAddressInspector.Target = hexView.GetSelectedData();
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var fd = new OpenFileDialog();
-            if (fd.ShowDialog() == DialogResult.OK)
-            {
-                hexView.FileName = fd.FileName;
-            }
-        }
-
         #region Mousewheel
         public bool PreFilterMessage(ref Message m)
         {
@@ -100,6 +91,16 @@ namespace hexer
             hoverAddressInspector.Target = hexView.GetHoverData();
         }
 
+        // --------------------------------------------------------------------- File Menu
+        #region File Menu
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var fd = new OpenFileDialog();
+            if (fd.ShowDialog() == DialogResult.OK)
+            {
+                hexView.FileName = fd.FileName;
+            }
+        }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var sfd = new SaveFileDialog();
@@ -110,11 +111,50 @@ namespace hexer
                 toolStripStatusLabel.Text = "Saved to " + sfd.FileName;
             }
         }
-
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             hexView.SaveToFile();
             toolStripStatusLabel.Text = "Saved to " + hexView.FileName;
+        }
+        #endregion
+
+        // --------------------------------------------------------------------- Markers Menu
+        #region Markers Menu
+        private void ConfigureMarkersDialog(FileDialog fd)
+        {
+            fd.Filter = "Hexer marker files (*.hmf)|*.hmf";
+            fd.DefaultExt = "hmf";
+        }
+        private void openMarkersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ConfigureMarkersDialog(ofd);
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                MarkerRepository.Instance.LoadFromFile(ofd.FileName);
+                hexView.Refresh();
+                toolStripStatusLabel.Text = "Loaded Markers from " + ofd.FileName;
+            }
+        }
+        private void saveMarkersAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sfd = new SaveFileDialog();
+            ConfigureMarkersDialog(sfd);
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                MarkerRepository.Instance.SaveToFile(sfd.FileName);
+                toolStripStatusLabel.Text = "Saved Markers to " + sfd.FileName;
+            }
+        }
+        private void saveMarkersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MarkerRepository.Instance.HasFileName()) MarkerRepository.Instance.SaveToFile();
+            else saveMarkersAsToolStripMenuItem_Click(sender, e);
+        }
+        #endregion
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
         }
     }
 }
