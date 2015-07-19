@@ -18,10 +18,10 @@ namespace hexer
         private byte[] fileBytes = null;
         private Font cFont = new Font("Consolas", 11);
         private Font tFont = new Font("Tahoma", 6);
-        private Font vFont = new Font("Segoe UI", 9);
+        private Font vFont = new Font("Segoe UI", 10);
 
-        private float hSpacing = 1.0f, vSpacing = 0.0f;
-        private float xStart, yStart;
+        private int hSpacing = 1, vSpacing = 0;
+        private int xStart, yStart;
         private SizeF byteSize;
 
         private int startLine = 0, totalLines = 1;
@@ -89,10 +89,12 @@ namespace hexer
             }
         }
 
-        private float LineHeight
-        { get { return byteSize.Height + vSpacing; } }
-        private float ColumnWidth
-        { get { return byteSize.Width + hSpacing; } }
+        private int LineHeight
+        { get { return (int)Math.Ceiling(byteSize.Height + vSpacing); } }
+        private int ColumnWidth
+        { get { return (int)Math.Ceiling(byteSize.Width + hSpacing); } }
+        private Size CellSize
+        { get { return new Size(ColumnWidth, LineHeight); } }
 
         public HexView()
         {
@@ -114,27 +116,41 @@ namespace hexer
             ComputeMetrics();
         }
 
+        // -------------------------------------------------------------------------- Marker Handling
+        #region Marker Handling
         private void MarkAs_Click(object sender, EventArgs e)
         {
             var ts = sender as ToolStripMenuItem;
             var dt = ts.Tag as DataType;
             MarkerRepository.Instance.AddMarker(SelectedAddress, dt);
         }
+        private void deleteMarkerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MarkerRepository.Instance.RemoveMarker(SelectedAddress);
+        }
+        private void editMarkerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MarkerRepository.Instance.EditMarker(SelectedAddress, this);
+        }
+        #endregion
 
         private void ComputeMetrics()
         {
             var g = CreateGraphics();
             byteSize = g.MeasureString("00", cFont);
-            xStart = g.MeasureString("0x00000000", cFont).Width + hSpacing * 3;
-            yStart = 1.0f;
+            xStart = (int)g.MeasureString("0x00000000", cFont).Width + hSpacing * 3;
+            yStart = 1;
         }
         private void ComputeVisible()
         {
-            visibleLines = (int)Math.Floor((Height - yStart) / LineHeight);
+            if (LineHeight == 0) return;
+            visibleLines = (Height - yStart) / LineHeight;
             visibleAddresses.Min = StartLine * 8 * numBytesInLine;
             visibleAddresses.Max = visibleAddresses.Min + visibleLines * numBytesInLine * 8;
         }
 
+        // -------------------------------------------------------------------------- File Handling
+        #region File Handling
         private void LoadFile(string fileName)
         {
             fileBytes = File.ReadAllBytes(fileName);
@@ -146,7 +162,6 @@ namespace hexer
             HoverAddress = -1;
             Refresh();
         }
-
         public void SaveToFile(string fileName)
         {
             this.fileName = fileName;
@@ -155,6 +170,38 @@ namespace hexer
         public void SaveToFile()
         {
             File.WriteAllBytes(fileName, fileBytes);
+        }
+        #endregion
+
+        private Bitmap DrawMarker(DataMarker marker, int address)
+        {
+            // draw marker to offscreen surface
+            Point origin = new Point(0, 0);
+            int mWidth = ColumnWidth * marker.NumBytes;
+            Bitmap markerBmp = new Bitmap(mWidth, LineHeight);
+            var mg = Graphics.FromImage(markerBmp);
+            var markerRect = new Rectangle(origin, new Size(mWidth, LineHeight));
+
+            // highlighting and selection
+            if (address == hoverAddress) mg.FillRectangle(Brushes.DarkBlue, markerRect);
+            if (address == selectedAddress) mg.FillRectangle(Brushes.DarkRed, markerRect);
+
+            // strings
+            StringFormat sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Near;
+            mg.DrawString(marker.Type.DecodeToString(new DataFragment(address, fileBytes, address/8, marker.NumBytes)), vFont, Brushes.White, markerRect, sf);
+            origin.Y += 11;
+            mg.DrawString(marker.Type.ShortName, tFont, Brushes.Orange, origin);
+
+            // draw line
+            var measure = mg.MeasureString(marker.Type.ShortName, tFont);
+            origin.X += (int)measure.Width + hSpacing;
+            origin.Y = LineHeight-3;
+            var point2 = new PointF(mWidth, origin.Y);
+            mg.DrawLine(new Pen(Brushes.DarkOrange), origin, point2);
+
+            return markerBmp;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -165,10 +212,12 @@ namespace hexer
 
             var hoverLoc = GetLocationOfAddress(hoverAddress);
 
+            Bitmap markerBmp = null;
             int skipAddresses = 0;
+            int skippedAddresses = 0;
             if (fileBytes != null)
             {
-                float y = yStart;
+                int y = yStart;
                 int line = StartLine;
                 while (y < e.ClipRectangle.Bottom)
                 {
@@ -182,44 +231,38 @@ namespace hexer
                         if (pos >= fileBytes.Length) break;
 
                         int address = pos * 8;
-                        var point = new PointF(xStart + i * ColumnWidth, y);
-
-                        // in a marker, draw line and skip rest
+                        var point = new Point(xStart + i * ColumnWidth, y);
+                        
+                        // in a marker, draw bg/line and skip rest
                         if (skipAddresses > 0)
                         {
                             skipAddresses--;
-                            point.Y += 15;
-                            var point2 = new PointF(point.X + ColumnWidth, point.Y);
-                            if (skipAddresses == 0) point2.X -= hSpacing;
-                            g.DrawLine(new Pen(Brushes.DarkOrange), point, point2);
+                            skippedAddresses++;
+                            // blit remaining portions of marker
+                            Point origin = new Point(ColumnWidth*skippedAddresses, 0);
+                            g.DrawImage(markerBmp, new Rectangle(point, CellSize), new Rectangle(origin, CellSize), GraphicsUnit.Pixel);
                             continue;
                         }
 
-                        // handle markers
                         var marker = MarkerRepository.Instance.GetMarker(address);
+                        // handle markers
                         if (marker != null)
                         {
-                            var drawPoint = new PointF(point.X, point.Y);
-                            drawPoint.Y -= 2;
-                            g.DrawString(marker.Type.DecodeToString(new DataFragment(address, fileBytes, pos, marker.NumBytes)), vFont, Brushes.White, drawPoint);
-                            drawPoint.Y += 13;
-                            g.DrawString(marker.Type.ShortName, tFont, Brushes.Orange, drawPoint);
+                            markerBmp = DrawMarker(marker, address);
                             skipAddresses = marker.NumBytes - 1;
-                            // draw line
-                            var measure = g.MeasureString(marker.Type.ShortName, tFont);
-                            drawPoint.X += measure.Width + hSpacing;
-                            drawPoint.Y = point.Y + 15;
-                            var point2 = new PointF(point.X + ColumnWidth, drawPoint.Y);
-                            g.DrawLine(new Pen(Brushes.DarkOrange), drawPoint, point2);
+                            skippedAddresses = 0;
+
+                            // blit first portion of marker
+                            g.DrawImage(markerBmp, new Rectangle(point, CellSize), new Rectangle(new Point(0, 0), CellSize), GraphicsUnit.Pixel);
                             continue;
                         }
 
                         // highlighting and selection
                         if (address == hoverAddress) g.FillRectangle(Brushes.Blue, new RectangleF(point, byteSize));
-                        else if (hoverAddress > 0 && address > hoverAddress && address - hoverAddress < 8 * 8)
+                        else if (hoverAddress >= 0 && address > hoverAddress && address - hoverAddress < 8 * 8 && !MarkerRepository.Instance.isMarker(HoverAddress))
                             g.FillRectangle(Brushes.DarkBlue, new RectangleF(point, byteSize));
                         if (address == selectedAddress) g.DrawRectangle(new Pen(Brushes.Red, 1.0f), Rectangle.Round(new RectangleF(point, byteSize)));
-                        else if (selectedAddress > 0 && address > selectedAddress && address - selectedAddress < 8 * 8)
+                        else if (selectedAddress >= 0 && address > selectedAddress && address - selectedAddress < 8 * 8 && !MarkerRepository.Instance.isMarker(SelectedAddress))
                             g.DrawRectangle(new Pen(Brushes.DarkRed, 1.0f), Rectangle.Round(new RectangleF(point, byteSize)));
 
                         // handle normal bytes
@@ -249,19 +292,16 @@ namespace hexer
             if (Control.ModifierKeys.HasFlag(Keys.Control)) offset *= 15;
             StartLine -= offset;
         }
-
-        // Terrible hack to fix initial form drawing 
-        private int formInited = 0;
+        
         protected override void OnMouseMove(MouseEventArgs e)
         {
+            Application.DoEvents();
             base.OnMouseMove(e);
             var p = new Point(e.X, e.Y);
-            HoverAddress = GetAddressAt(p);
-            if (formInited < 2)
-            {
-                FindForm().Refresh();
-                ++formInited;
-            }
+            var hAddr = GetAddressAt(p);
+            var m = MarkerRepository.Instance.GetMarkerCovering(hAddr);
+            if (m != null) hAddr = m.Address;
+            HoverAddress = hAddr;
         }
 
         protected override void OnMouseClick(MouseEventArgs e)
@@ -269,7 +309,16 @@ namespace hexer
             base.OnMouseClick(e);
             var p = new Point(e.X, e.Y);
             SelectedAddress = GetAddressAt(p);
-            if (e.Button == MouseButtons.Right) contextMenuStrip.Show(PointToScreen(p));
+            var m = MarkerRepository.Instance.GetMarkerCovering(SelectedAddress);
+            if (m != null)
+            {
+                SelectedAddress = m.Address;
+                if (e.Button == MouseButtons.Right) markerMenuStrip.Show(PointToScreen(p));
+            }
+            else
+            {
+                if (e.Button == MouseButtons.Right) contextMenuStrip.Show(PointToScreen(p));
+            }
         }
 
         private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
@@ -333,7 +382,8 @@ namespace hexer
             }
             return true;
         }
-        public static int StartingIndex(byte[] x, byte[] y)
+
+        private static int StartingIndex(byte[] x, byte[] y)
         {
             int max = 1 + x.Length - y.Length;
             for (int i = 0; i < max; i++)

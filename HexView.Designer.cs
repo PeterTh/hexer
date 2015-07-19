@@ -34,7 +34,11 @@ namespace hexer
             this.vScrollBar = new System.Windows.Forms.VScrollBar();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.markAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.markerMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.editMarkerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteMarkerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
+            this.markerMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // vScrollBar
@@ -51,13 +55,35 @@ namespace hexer
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.markAsToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(153, 48);
+            this.contextMenuStrip.Size = new System.Drawing.Size(118, 26);
             // 
             // markAsToolStripMenuItem
             // 
             this.markAsToolStripMenuItem.Name = "markAsToolStripMenuItem";
-            this.markAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.markAsToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.markAsToolStripMenuItem.Text = "Mark As";
+            // 
+            // markerMenuStrip
+            // 
+            this.markerMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editMarkerToolStripMenuItem,
+            this.deleteMarkerToolStripMenuItem});
+            this.markerMenuStrip.Name = "markerMenuStrip";
+            this.markerMenuStrip.Size = new System.Drawing.Size(153, 70);
+            // 
+            // editMarkerToolStripMenuItem
+            // 
+            this.editMarkerToolStripMenuItem.Name = "editMarkerToolStripMenuItem";
+            this.editMarkerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editMarkerToolStripMenuItem.Text = "Edit Marker";
+            this.editMarkerToolStripMenuItem.Click += new System.EventHandler(this.editMarkerToolStripMenuItem_Click);
+            // 
+            // deleteMarkerToolStripMenuItem
+            // 
+            this.deleteMarkerToolStripMenuItem.Name = "deleteMarkerToolStripMenuItem";
+            this.deleteMarkerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteMarkerToolStripMenuItem.Text = "Delete Marker";
+            this.deleteMarkerToolStripMenuItem.Click += new System.EventHandler(this.deleteMarkerToolStripMenuItem_Click);
             // 
             // HexView
             // 
@@ -67,6 +93,7 @@ namespace hexer
             this.Name = "HexView";
             this.Size = new System.Drawing.Size(584, 539);
             this.contextMenuStrip.ResumeLayout(false);
+            this.markerMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -76,5 +103,8 @@ namespace hexer
         private System.Windows.Forms.VScrollBar vScrollBar;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem markAsToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip markerMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem editMarkerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteMarkerToolStripMenuItem;
     }
 }

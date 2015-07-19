@@ -48,7 +48,7 @@ namespace hexer
             return Address.CompareTo(other.Address);
         }
     }
-    
+
     public class MarkerRepository
     {
         public static readonly MarkerRepository Instance = new MarkerRepository();
@@ -63,11 +63,45 @@ namespace hexer
             markers.Add(addr, new DataMarker(addr, dt));
         }
 
+        internal void RemoveMarker(int selectedAddress)
+        {
+            markers.Remove(selectedAddress);
+        }
+
         public DataMarker GetMarker(int addr)
         {
             if (markers.ContainsKey(addr))
             {
                 return markers[addr];
+            }
+            return null;
+        }
+        
+        public void EditMarker(int selectedAddress, HexView hexview)
+        {
+             new MarkerEditor(GetMarker(selectedAddress), hexview).Show();
+        }
+
+        public bool isMarker(int addr)
+        {
+            return markers.ContainsKey(addr);
+        }
+
+        public DataMarker GetMarkerCovering(int addr)
+        {
+            // This is terrible. Should really use something like an interval tree for marker storage.
+            // On the other hand, it's probably easily fast enough. Doesn't make it any less terrible though.
+            const int MAX_MARKER_BYTES = 16;
+
+            for (int i = 0; i < MAX_MARKER_BYTES; ++i)
+            {
+                if (markers.ContainsKey(addr))
+                {
+                    var m = markers[addr];
+                    if (m.NumBytes >= i) return m;
+                    else return null;
+                }
+                addr -= 8;
             }
             return null;
         }

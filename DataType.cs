@@ -18,15 +18,17 @@ namespace hexer
         public string ShortName { get; internal set; }
 
         public int NumBytes { get; internal set; }
+        public bool VariableNumBytes { get; internal set; }
 
         private Func<DataFragment, string> decoder;
         private Func<int, string, DataFragment> encoder;
 
-        public DataType(string name, string shortName, int numBytes, Func<DataFragment, string> dec, Func<int, string, DataFragment> enc)
+        public DataType(string name, string shortName, int numBytes, bool variableBytes, Func<DataFragment, string> dec, Func<int, string, DataFragment> enc)
         {
             Name = name;
             ShortName = shortName;
             NumBytes = numBytes;
+            VariableNumBytes = variableBytes;
             decoder = dec;
             encoder = enc;
         }
@@ -76,61 +78,61 @@ namespace hexer
                 dataTypes = new List<DataType>();
 
                 dataTypes.Add(DataType.CreateSeparator("Integers"));
-                dataTypes.Add(new DataType( "int8", "i8", 1,
+                dataTypes.Add(new DataType( "int8", "i8", 1, false,
                     df => String.Format("{0:d}", (sbyte)df.Data[0]),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToSByte(str)))
                     ));
-                dataTypes.Add(new DataType("int16", "i16", 2,
+                dataTypes.Add(new DataType("int16", "i16", 2, false,
                     df => String.Format("{0:d}", BitConverter.ToInt16(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToInt16(str)))
                     ));
-                dataTypes.Add(new DataType("int32", "i32", 4,
+                dataTypes.Add(new DataType("int32", "i32", 4, false,
                     df => String.Format("{0:d}", BitConverter.ToInt32(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToInt32(str)))
                     ));
-                dataTypes.Add(new DataType("int64", "i64", 8,
+                dataTypes.Add(new DataType("int64", "i64", 8, false,
                     df => String.Format("{0:d}", BitConverter.ToInt64(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToInt64(str)))
                     ));
 
                 dataTypes.Add(DataType.CreateSeparator("Unsigned"));
-                dataTypes.Add(new DataType( "uint8", "u8", 1,
+                dataTypes.Add(new DataType( "uint8", "u8", 1, false,
                     df => String.Format("{0:d}", df.Data[0]),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToByte(str)))
                     ));
-                dataTypes.Add(new DataType("uint16", "u16", 2,
+                dataTypes.Add(new DataType("uint16", "u16", 2, false,
                     df => String.Format("{0:d}", BitConverter.ToUInt16(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToUInt16(str)))
                     ));
-                dataTypes.Add(new DataType("uint32", "u32", 4,
+                dataTypes.Add(new DataType("uint32", "u32", 4, false,
                     df => String.Format("{0:d}", BitConverter.ToUInt32(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToUInt32(str)))
                     ));
-                dataTypes.Add(new DataType("uint64", "u64", 8,
+                dataTypes.Add(new DataType("uint64", "u64", 8, false,
                     df => String.Format("{0:d}", BitConverter.ToUInt64(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToUInt64(str)))
                     ));
 
                 dataTypes.Add(DataType.CreateSeparator("Floats"));
-                dataTypes.Add(new DataType("single", "f", 4,
+                dataTypes.Add(new DataType("single", "f", 4, false,
                     df => String.Format("{0:f4}", BitConverter.ToSingle(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToSingle(str)))
                     ));
-                dataTypes.Add(new DataType("double", "d", 8,
+                dataTypes.Add(new DataType("double", "d", 8, false,
                     df => String.Format("{0:f4}", BitConverter.ToDouble(df.Data, 0)),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToDouble(str)))
                     ));
 
                 dataTypes.Add(DataType.CreateSeparator("Text"));
-                dataTypes.Add(new DataType("ascii", "ta", 8,
+                dataTypes.Add(new DataType("ascii", "ta", 8, true,
                     df => Encoding.ASCII.GetString(df.Data).Truncate(df.Length),
                     (addr, str) => new DataFragment(addr, Encoding.ASCII.GetBytes(str))
                     ));
-                dataTypes.Add(new DataType( "utf8", "t8", 8,
+                dataTypes.Add(new DataType( "utf8", "t8", 8, true,
                     df => Encoding.UTF8.GetString(df.Data).Truncate(df.Length),
                     (addr, str) => new DataFragment(addr, Encoding.UTF8.GetBytes(str))
                     ));
-                dataTypes.Add(new DataType("utf32", "t32", 8,
+                dataTypes.Add(new DataType("utf32", "t32", 8, true,
                     df => Encoding.UTF32.GetString(df.Data).Truncate(df.Length/4),
                     (addr, str) => new DataFragment(addr, Encoding.UTF32.GetBytes(str))
                     ));
@@ -164,6 +166,10 @@ namespace hexer
             {
                 return Convert.ToInt32(s);
             }
+        }
+        public static string AddressToString(int addr)
+        {
+            return "0x" + Convert.ToString(addr, 16).PadLeft(8, '0').ToUpper();
         }
 
         #region XML Serialization

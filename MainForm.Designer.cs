@@ -39,14 +39,16 @@
             this.goToSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.markersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMarkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMarkersAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMarkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.hoverAddressInspector = new hexer.AddressInspector();
             this.selectedAddressInspector = new hexer.AddressInspector();
             this.hexView = new hexer.HexView();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.showMarkerWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
@@ -152,28 +154,11 @@
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
-            // mainSplitContainer
-            // 
-            this.mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.mainSplitContainer.Location = new System.Drawing.Point(0, 24);
-            this.mainSplitContainer.Name = "mainSplitContainer";
-            // 
-            // mainSplitContainer.Panel1
-            // 
-            this.mainSplitContainer.Panel1.Controls.Add(this.hoverAddressInspector);
-            this.mainSplitContainer.Panel1.Controls.Add(this.selectedAddressInspector);
-            // 
-            // mainSplitContainer.Panel2
-            // 
-            this.mainSplitContainer.Panel2.Controls.Add(this.hexView);
-            this.mainSplitContainer.Size = new System.Drawing.Size(1111, 708);
-            this.mainSplitContainer.SplitterDistance = 220;
-            this.mainSplitContainer.TabIndex = 3;
-            // 
             // markersToolStripMenuItem
             // 
             this.markersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showMarkerWindowToolStripMenuItem,
+            this.toolStripSeparator1,
             this.openMarkersToolStripMenuItem,
             this.saveMarkersAsToolStripMenuItem,
             this.saveMarkersToolStripMenuItem});
@@ -187,7 +172,7 @@
             this.openMarkersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.O)));
             this.openMarkersToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
-            this.openMarkersToolStripMenuItem.Text = "Open Markers";
+            this.openMarkersToolStripMenuItem.Text = "Load Markers";
             this.openMarkersToolStripMenuItem.Click += new System.EventHandler(this.openMarkersToolStripMenuItem_Click);
             // 
             // saveMarkersAsToolStripMenuItem
@@ -208,6 +193,25 @@
             this.saveMarkersToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
             this.saveMarkersToolStripMenuItem.Text = "Save Markers";
             this.saveMarkersToolStripMenuItem.Click += new System.EventHandler(this.saveMarkersToolStripMenuItem_Click);
+            // 
+            // mainSplitContainer
+            // 
+            this.mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.mainSplitContainer.Location = new System.Drawing.Point(0, 24);
+            this.mainSplitContainer.Name = "mainSplitContainer";
+            // 
+            // mainSplitContainer.Panel1
+            // 
+            this.mainSplitContainer.Panel1.Controls.Add(this.hoverAddressInspector);
+            this.mainSplitContainer.Panel1.Controls.Add(this.selectedAddressInspector);
+            // 
+            // mainSplitContainer.Panel2
+            // 
+            this.mainSplitContainer.Panel2.Controls.Add(this.hexView);
+            this.mainSplitContainer.Size = new System.Drawing.Size(1111, 708);
+            this.mainSplitContainer.SplitterDistance = 220;
+            this.mainSplitContainer.TabIndex = 3;
             // 
             // hoverAddressInspector
             // 
@@ -246,6 +250,18 @@
             this.hexView.TabIndex = 0;
             this.hexView.HoverAddressChanged += new System.EventHandler(this.hexView_HoverAddressChanged);
             this.hexView.SelectedAddressChanged += new System.EventHandler(this.hexView_SelectedAddressChanged);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(260, 6);
+            // 
+            // showMarkerWindowToolStripMenuItem
+            // 
+            this.showMarkerWindowToolStripMenuItem.Name = "showMarkerWindowToolStripMenuItem";
+            this.showMarkerWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
+            this.showMarkerWindowToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.showMarkerWindowToolStripMenuItem.Text = "Show Marker Window";
             // 
             // MainForm
             // 
@@ -292,6 +308,8 @@
         private System.Windows.Forms.ToolStripMenuItem openMarkersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMarkersAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMarkersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showMarkerWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 

@@ -62,7 +62,7 @@ namespace hexer
         {
             using (new SuspendDrawing(this))
             {
-                addressTextBox.Text = "0x" + Convert.ToString(target.Address, 16).PadLeft(8, '0').ToUpper();
+                addressTextBox.Text = DataType.AddressToString(target.Address);
                 foreach (var dt in DataType.GetKnownDataTypes())
                 {
                     var tb = Controls[dt.Name + "TextBox"] as TextBox;
