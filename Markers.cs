@@ -70,16 +70,15 @@ namespace hexer
 
         public DataMarker GetMarker(int addr)
         {
-            if (markers.ContainsKey(addr))
-            {
+            if(markers.ContainsKey(addr)) {
                 return markers[addr];
             }
             return null;
         }
-        
+
         public void EditMarker(int selectedAddress, HexView hexview)
         {
-             new MarkerEditor(GetMarker(selectedAddress), hexview).Show();
+            new MarkerEditor(GetMarker(selectedAddress), hexview).Show();
         }
 
         public bool isMarker(int addr)
@@ -93,12 +92,10 @@ namespace hexer
             // On the other hand, it's probably easily fast enough. Doesn't make it any less terrible though.
             const int MAX_MARKER_BYTES = 16;
 
-            for (int i = 0; i < MAX_MARKER_BYTES; ++i)
-            {
-                if (markers.ContainsKey(addr))
-                {
+            for(int i = 0; i < MAX_MARKER_BYTES; ++i) {
+                if(markers.ContainsKey(addr)) {
                     var m = markers[addr];
-                    if (m.NumBytes >= i) return m;
+                    if(m.NumBytes > i) return m;
                     else return null;
                 }
                 addr -= 8;
@@ -115,10 +112,9 @@ namespace hexer
         }
         public void SaveToFile(string fn = "")
         {
-            if (fn == "") fn = fileName;
+            if(fn == "") fn = fileName;
             var serializer = new XmlSerializer(typeof(List<DataMarker>));
-            using (TextWriter writer = new StreamWriter(fn))
-            {
+            using(TextWriter writer = new StreamWriter(fn)) {
                 serializedMarkers = markers.Values.ToList();
                 serializer.Serialize(writer, serializedMarkers);
             }
@@ -127,10 +123,9 @@ namespace hexer
         public void LoadFromFile(string fn)
         {
             var serializer = new XmlSerializer(typeof(List<DataMarker>));
-            using (TextReader reader = new StreamReader(fn))
-            {
+            using(TextReader reader = new StreamReader(fn)) {
                 serializedMarkers = serializer.Deserialize(reader) as List<DataMarker>;
-                foreach (DataMarker marker in serializedMarkers) markers.Add(marker.Address, marker);
+                foreach(DataMarker marker in serializedMarkers) markers.Add(marker.Address, marker);
             }
             fileName = fn;
         }

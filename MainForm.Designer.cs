@@ -240,7 +240,6 @@
             // hexView
             // 
             this.hexView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hexView.FileName = "E:\\Steam\\userdata\\31474140\\251150\\remote\\fc\\SVDAT149.SAV";
             this.hexView.HoverAddress = -1;
             this.hexView.Location = new System.Drawing.Point(0, 0);
             this.hexView.Name = "hexView";

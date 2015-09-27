@@ -73,12 +73,11 @@ namespace hexer
 
         public static List<DataType> GetKnownDataTypesAndSeperators()
         {
-            if (dataTypes == null)
-            {
+            if(dataTypes == null) {
                 dataTypes = new List<DataType>();
 
                 dataTypes.Add(DataType.CreateSeparator("Integers"));
-                dataTypes.Add(new DataType( "int8", "i8", 1, false,
+                dataTypes.Add(new DataType("int8", "i8", 1, false,
                     df => String.Format("{0:d}", (sbyte)df.Data[0]),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToSByte(str)))
                     ));
@@ -96,7 +95,7 @@ namespace hexer
                     ));
 
                 dataTypes.Add(DataType.CreateSeparator("Unsigned"));
-                dataTypes.Add(new DataType( "uint8", "u8", 1, false,
+                dataTypes.Add(new DataType("uint8", "u8", 1, false,
                     df => String.Format("{0:d}", df.Data[0]),
                     (addr, str) => new DataFragment(addr, BitConverter.GetBytes(Convert.ToByte(str)))
                     ));
@@ -128,12 +127,12 @@ namespace hexer
                     df => Encoding.ASCII.GetString(df.Data).Truncate(df.Length),
                     (addr, str) => new DataFragment(addr, Encoding.ASCII.GetBytes(str))
                     ));
-                dataTypes.Add(new DataType( "utf8", "t8", 8, true,
+                dataTypes.Add(new DataType("utf8", "t8", 8, true,
                     df => Encoding.UTF8.GetString(df.Data).Truncate(df.Length),
                     (addr, str) => new DataFragment(addr, Encoding.UTF8.GetBytes(str))
                     ));
                 dataTypes.Add(new DataType("utf32", "t32", 8, true,
-                    df => Encoding.UTF32.GetString(df.Data).Truncate(df.Length/4),
+                    df => Encoding.UTF32.GetString(df.Data).Truncate(df.Length / 4),
                     (addr, str) => new DataFragment(addr, Encoding.UTF32.GetBytes(str))
                     ));
             }
@@ -147,23 +146,19 @@ namespace hexer
 
         public static int StringToAddress(string s)
         {
-            if (s.StartsWith("0x"))
-            {
+            if(s.StartsWith("0x")) {
                 s = s.Substring(2);
                 return (int)Convert.ToUInt32(s, 16);
             }
-            else if (s.StartsWith("0b"))
-            {
+            else if(s.StartsWith("0b")) {
                 s = s.Substring(2);
                 return (int)Convert.ToUInt32(s, 2);
             }
-            else if (s.StartsWith("0"))
-            {
+            else if(s.StartsWith("0")) {
                 s = s.Substring(1);
                 return (int)Convert.ToUInt32(s, 8);
             }
-            else
-            {
+            else {
                 return Convert.ToInt32(s);
             }
         }
@@ -190,7 +185,7 @@ namespace hexer
         }
         #endregion
     }
-    
+
     public class DataFragment
     {
         public const int MAX_LENGTH = 128;

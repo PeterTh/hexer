@@ -30,8 +30,8 @@ namespace hexer
             get { return startLine; }
             set
             {
-                if (value < 0) startLine = 0;
-                else if (value >= totalLines - 1) startLine = totalLines - 1;
+                if(value < 0) startLine = 0;
+                else if(value >= totalLines - 1) startLine = totalLines - 1;
                 else startLine = value;
                 vScrollBar.Value = startLine;
                 Refresh();
@@ -41,7 +41,7 @@ namespace hexer
         private int visibleLines = 1;
         private Interval<int> visibleAddresses = new Interval<int>(0, 0);
 
-        private string fileName = @"E:\Steam\userdata\31474140\251150\remote\fc\SVDAT149.SAV";
+        private string fileName;
         [Description("Hex file name"), Category("Hex")]
         public string FileName
         {
@@ -49,7 +49,7 @@ namespace hexer
             set
             {
                 fileName = value;
-                if (fileName.Length > 0) LoadFile(fileName);
+                if(fileName.Length > 0) LoadFile(fileName);
             }
         }
 
@@ -100,8 +100,7 @@ namespace hexer
         {
             InitializeComponent();
 
-            foreach (var dt in DataType.GetKnownDataTypes())
-            {
+            foreach(var dt in DataType.GetKnownDataTypes()) {
                 var markAs = new ToolStripMenuItem(dt.Name);
                 markAs.Click += MarkAs_Click;
                 markAs.Tag = dt;
@@ -143,7 +142,7 @@ namespace hexer
         }
         private void ComputeVisible()
         {
-            if (LineHeight == 0) return;
+            if(LineHeight == 0) return;
             visibleLines = (Height - yStart) / LineHeight;
             visibleAddresses.Min = StartLine * 8 * numBytesInLine;
             visibleAddresses.Max = visibleAddresses.Min + visibleLines * numBytesInLine * 8;
@@ -183,21 +182,21 @@ namespace hexer
             var markerRect = new Rectangle(origin, new Size(mWidth, LineHeight));
 
             // highlighting and selection
-            if (address == hoverAddress) mg.FillRectangle(Brushes.DarkBlue, markerRect);
-            if (address == selectedAddress) mg.FillRectangle(Brushes.DarkRed, markerRect);
+            if(address == hoverAddress) mg.FillRectangle(Brushes.DarkBlue, markerRect);
+            if(address == selectedAddress) mg.FillRectangle(Brushes.DarkRed, markerRect);
 
             // strings
             StringFormat sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Near;
-            mg.DrawString(marker.Type.DecodeToString(new DataFragment(address, fileBytes, address/8, marker.NumBytes)), vFont, Brushes.White, markerRect, sf);
+            mg.DrawString(marker.Type.DecodeToString(new DataFragment(address, fileBytes, address / 8, marker.NumBytes)), vFont, Brushes.White, markerRect, sf);
             origin.Y += 11;
             mg.DrawString(marker.Type.ShortName, tFont, Brushes.Orange, origin);
 
             // draw line
             var measure = mg.MeasureString(marker.Type.ShortName, tFont);
             origin.X += (int)measure.Width + hSpacing;
-            origin.Y = LineHeight-3;
+            origin.Y = LineHeight - 3;
             var point2 = new PointF(mWidth, origin.Y);
             mg.DrawLine(new Pen(Brushes.DarkOrange), origin, point2);
 
@@ -209,45 +208,38 @@ namespace hexer
             base.OnPaint(e);
             var g = e.Graphics;
             g.FillRectangle(Brushes.Black, e.ClipRectangle);
-
-            var hoverLoc = GetLocationOfAddress(hoverAddress);
-
+            
             Bitmap markerBmp = null;
             int skipAddresses = 0;
             int skippedAddresses = 0;
-            if (fileBytes != null)
-            {
+            if(fileBytes != null) {
                 int y = yStart;
                 int line = StartLine;
-                while (y < e.ClipRectangle.Bottom)
-                {
+                while(y < e.ClipRectangle.Bottom) {
                     int lineAddress = numBytesInLine * line * 8;
                     var addrString = "0x" + Convert.ToString(lineAddress, 16).PadLeft(8, '0').ToUpper();
                     g.DrawString(addrString, cFont, Brushes.Aqua, new PointF(hSpacing, y));
 
-                    for (int i = 0; i < numBytesInLine; ++i)
-                    {
+                    for(int i = 0; i < numBytesInLine; ++i) {
                         int pos = i + numBytesInLine * line;
-                        if (pos >= fileBytes.Length) break;
+                        if(pos >= fileBytes.Length) break;
 
                         int address = pos * 8;
                         var point = new Point(xStart + i * ColumnWidth, y);
-                        
+
                         // in a marker, draw bg/line and skip rest
-                        if (skipAddresses > 0)
-                        {
+                        if(skipAddresses > 0) {
                             skipAddresses--;
                             skippedAddresses++;
                             // blit remaining portions of marker
-                            Point origin = new Point(ColumnWidth*skippedAddresses, 0);
+                            Point origin = new Point(ColumnWidth * skippedAddresses, 0);
                             g.DrawImage(markerBmp, new Rectangle(point, CellSize), new Rectangle(origin, CellSize), GraphicsUnit.Pixel);
                             continue;
                         }
 
                         var marker = MarkerRepository.Instance.GetMarker(address);
                         // handle markers
-                        if (marker != null)
-                        {
+                        if(marker != null) {
                             markerBmp = DrawMarker(marker, address);
                             skipAddresses = marker.NumBytes - 1;
                             skippedAddresses = 0;
@@ -258,18 +250,18 @@ namespace hexer
                         }
 
                         // highlighting and selection
-                        if (address == hoverAddress) g.FillRectangle(Brushes.Blue, new RectangleF(point, byteSize));
-                        else if (hoverAddress >= 0 && address > hoverAddress && address - hoverAddress < 8 * 8 && !MarkerRepository.Instance.isMarker(HoverAddress))
+                        if(address == hoverAddress) g.FillRectangle(Brushes.Blue, new RectangleF(point, byteSize));
+                        else if(hoverAddress >= 0 && address > hoverAddress && address - hoverAddress < 8 * 8 && !MarkerRepository.Instance.isMarker(HoverAddress))
                             g.FillRectangle(Brushes.DarkBlue, new RectangleF(point, byteSize));
-                        if (address == selectedAddress) g.DrawRectangle(new Pen(Brushes.Red, 1.0f), Rectangle.Round(new RectangleF(point, byteSize)));
-                        else if (selectedAddress >= 0 && address > selectedAddress && address - selectedAddress < 8 * 8 && !MarkerRepository.Instance.isMarker(SelectedAddress))
+                        if(address == selectedAddress) g.DrawRectangle(new Pen(Brushes.Red, 1.0f), Rectangle.Round(new RectangleF(point, byteSize)));
+                        else if(selectedAddress >= 0 && address > selectedAddress && address - selectedAddress < 8 * 8 && !MarkerRepository.Instance.isMarker(SelectedAddress))
                             g.DrawRectangle(new Pen(Brushes.DarkRed, 1.0f), Rectangle.Round(new RectangleF(point, byteSize)));
 
                         // handle normal bytes
                         var byt = fileBytes[pos];
                         var byteString = Convert.ToString(byt, 16).PadLeft(2, '0').ToUpper();
                         var brush = Brushes.LightGray;
-                        if (byt == 0) brush = Brushes.Gray;
+                        if(byt == 0) brush = Brushes.Gray;
                         g.DrawString(byteString, cFont, brush, point);
                     }
 
@@ -289,10 +281,10 @@ namespace hexer
         {
             base.OnMouseWheel(e);
             int offset = e.Delta / WHEEL_DELTA;
-            if (Control.ModifierKeys.HasFlag(Keys.Control)) offset *= 15;
+            if(Control.ModifierKeys.HasFlag(Keys.Control)) offset *= 15;
             StartLine -= offset;
         }
-        
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             Application.DoEvents();
@@ -300,7 +292,7 @@ namespace hexer
             var p = new Point(e.X, e.Y);
             var hAddr = GetAddressAt(p);
             var m = MarkerRepository.Instance.GetMarkerCovering(hAddr);
-            if (m != null) hAddr = m.Address;
+            if(m != null) hAddr = m.Address;
             HoverAddress = hAddr;
         }
 
@@ -310,14 +302,12 @@ namespace hexer
             var p = new Point(e.X, e.Y);
             SelectedAddress = GetAddressAt(p);
             var m = MarkerRepository.Instance.GetMarkerCovering(SelectedAddress);
-            if (m != null)
-            {
+            if(m != null) {
                 SelectedAddress = m.Address;
-                if (e.Button == MouseButtons.Right) markerMenuStrip.Show(PointToScreen(p));
+                if(e.Button == MouseButtons.Right) markerMenuStrip.Show(PointToScreen(p));
             }
-            else
-            {
-                if (e.Button == MouseButtons.Right) contextMenuStrip.Show(PointToScreen(p));
+            else {
+                if(e.Button == MouseButtons.Right) contextMenuStrip.Show(PointToScreen(p));
             }
         }
 
@@ -352,7 +342,8 @@ namespace hexer
 
         public DataFragment GetDataAt(int address)
         {
-            if (address < 0 || address >= fileBytes.Length * 8) return new DataFragment();
+            if(fileBytes == null) return new DataFragment();
+            if(address < 0 || address >= fileBytes.Length * 8) return new DataFragment();
             return new DataFragment(address, fileBytes, address / 8);
         }
         public DataFragment GetSelectedData() { return GetDataAt(SelectedAddress); }
@@ -360,12 +351,11 @@ namespace hexer
 
         public void NavigateToAddress(int address)
         {
-            if (address < 0) address = 0;
-            if (address / 8 >= fileBytes.Length) address = fileBytes.Length - 1;
+            if(address < 0) address = 0;
+            if(address / 8 >= fileBytes.Length) address = fileBytes.Length - 1;
             SelectedAddress = address;
 
-            if (!visibleAddresses.Contains(SelectedAddress))
-            {
+            if(!visibleAddresses.Contains(SelectedAddress)) {
                 StartLine = ((address / 8) / numBytesInLine) - (visibleLines / 2);
             }
         }
@@ -376,9 +366,8 @@ namespace hexer
 
         private static bool IsSubArrayEqual(byte[] x, byte[] y, int start)
         {
-            for (int i = 0; i < y.Length; i++)
-            {
-                if (x[start++] != y[i]) return false;
+            for(int i = 0; i < y.Length; i++) {
+                if(x[start++] != y[i]) return false;
             }
             return true;
         }
@@ -386,9 +375,8 @@ namespace hexer
         private static int StartingIndex(byte[] x, byte[] y)
         {
             int max = 1 + x.Length - y.Length;
-            for (int i = 0; i < max; i++)
-            {
-                if (IsSubArrayEqual(x, y, i)) return i;
+            for(int i = 0; i < max; i++) {
+                if(IsSubArrayEqual(x, y, i)) return i;
             }
             return -1;
         }
@@ -398,8 +386,7 @@ namespace hexer
             byte[] target = new byte[toSearch.Length];
             Array.Copy(toSearch.Data, target, toSearch.Length);
             int idx = StartingIndex(fileBytes, target);
-            if (idx >= 0)
-            {
+            if(idx >= 0) {
                 NavigateToAddress(idx * 8);
             }
             return idx >= 0;
