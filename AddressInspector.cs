@@ -30,15 +30,14 @@ namespace hexer
 
         private bool editable = true;
         [Description("Is value editable?"), Category("Hex")]
-        public bool Editable {
+        public bool Editable
+        {
             get { return editable; }
             set
             {
                 editable = value;
-                foreach(var c in Controls)
-                {
-                    if(c is TextBox && c != addressTextBox)
-                    {
+                foreach(var c in Controls) {
+                    if(c is TextBox && c != addressTextBox) {
                         var ct = c as TextBox;
                         ct.ReadOnly = !editable;
                     }
@@ -60,11 +59,9 @@ namespace hexer
 
         private void RecomputeStrings()
         {
-            using (new SuspendDrawing(this))
-            {
+            using(new SuspendDrawing(this)) {
                 addressTextBox.Text = DataType.AddressToString(target.Address);
-                foreach (var dt in DataType.GetKnownDataTypes())
-                {
+                foreach(var dt in DataType.GetKnownDataTypes()) {
                     var tb = Controls[dt.Name + "TextBox"] as TextBox;
                     tb.Text = dt.DecodeToString(target);
                 }
@@ -75,14 +72,12 @@ namespace hexer
         public AddressInspector()
         {
             InitializeComponent();
-                        
+
             int y = 29;
             int lblX = 5;
             int textBoxX = 50;
-            foreach (var dt in DataType.GetKnownDataTypesAndSeperators())
-            {
-                if (dt.Seperator)
-                {
+            foreach(var dt in DataType.GetKnownDataTypesAndSeperators()) {
+                if(dt.Seperator) {
                     var lbl = new Label();
                     lbl.AutoSize = true;
                     lbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -94,8 +89,7 @@ namespace hexer
                     Controls.Add(lbl);
                     y += 15;
                 }
-                else
-                {
+                else {
                     // text box
                     var textBox = new TextBox();
                     textBox.Anchor |= System.Windows.Forms.AnchorStyles.Right;
@@ -109,9 +103,9 @@ namespace hexer
                     // label
                     var lbl = new Label();
                     lbl.AutoSize = false;
-                    lbl.Location = new System.Drawing.Point(lblX, y+3);
+                    lbl.Location = new System.Drawing.Point(lblX, y + 3);
                     lbl.Name = dt.Name + "Label";
-                    lbl.Size = new System.Drawing.Size(textBoxX-lblX-4, 13);
+                    lbl.Size = new System.Drawing.Size(textBoxX - lblX - 4, 13);
                     lbl.Text = dt.Name;
                     lbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
                     Controls.Add(lbl);
@@ -122,8 +116,7 @@ namespace hexer
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
+            if(e.KeyCode == Keys.Enter) {
                 var tb = sender as TextBox;
                 var dt = tb.Tag as DataType;
 

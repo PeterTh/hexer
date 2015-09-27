@@ -40,6 +40,7 @@
             this.valueTextBox = new System.Windows.Forms.TextBox();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.applyButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.sizeNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -101,6 +102,7 @@
             this.dataTypeComboBox.Name = "dataTypeComboBox";
             this.dataTypeComboBox.Size = new System.Drawing.Size(152, 21);
             this.dataTypeComboBox.TabIndex = 2;
+            this.dataTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.dataTypeComboBox_SelectedIndexChanged);
             // 
             // sizelabel
             // 
@@ -148,6 +150,7 @@
             this.okButton.TabIndex = 4;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // cancelButton
             // 
@@ -159,6 +162,18 @@
             this.cancelButton.TabIndex = 5;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            // 
+            // applyButton
+            // 
+            this.applyButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.applyButton.Location = new System.Drawing.Point(98, 149);
+            this.applyButton.Name = "applyButton";
+            this.applyButton.Size = new System.Drawing.Size(75, 23);
+            this.applyButton.TabIndex = 12;
+            this.applyButton.Text = "Apply";
+            this.applyButton.UseVisualStyleBackColor = true;
+            this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
             // 
             // MarkerEditor
             // 
@@ -167,6 +182,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(271, 184);
+            this.Controls.Add(this.applyButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.valueLabel);
@@ -202,5 +218,6 @@
         private System.Windows.Forms.TextBox valueTextBox;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Button applyButton;
     }
 }

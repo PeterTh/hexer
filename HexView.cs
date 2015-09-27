@@ -41,14 +41,15 @@ namespace hexer
         private int visibleLines = 1;
         private Interval<int> visibleAddresses = new Interval<int>(0, 0);
 
-        private string fileName;
+        private string fileName = "";
         [Description("Hex file name"), Category("Hex")]
         public string FileName
         {
             get { return fileName; }
             set
             {
-                fileName = value;
+                if(value != null) fileName = value;
+                else fileName = "";
                 if(fileName.Length > 0) LoadFile(fileName);
             }
         }
@@ -348,7 +349,7 @@ namespace hexer
         }
         public DataFragment GetSelectedData() { return GetDataAt(SelectedAddress); }
         public DataFragment GetHoverData() { return GetDataAt(HoverAddress); }
-
+        
         public void NavigateToAddress(int address)
         {
             if(address < 0) address = 0;
@@ -394,8 +395,10 @@ namespace hexer
 
         internal void ApplyEdit(DataFragment data)
         {
-            Array.Copy(data.Data, 0, fileBytes, data.Address / 8, data.Length);
-            NavigateToAddress();
+            if(data.Length > 0) {
+                Array.Copy(data.Data, 0, fileBytes, data.Address / 8, data.Length);
+                NavigateToAddress();
+            }
         }
     }
 }

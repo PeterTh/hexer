@@ -30,13 +30,11 @@ namespace hexer
         #region Mousewheel
         public bool PreFilterMessage(ref Message m)
         {
-            if (m.Msg == WM_MOUSEWHEEL)
-            {
+            if(m.Msg == WM_MOUSEWHEEL) {
                 // WM_MOUSEWHEEL, find the control at screen position m.LParam
                 var hWnd = WindowFromPoint(Cursor.Position);
 
-                if (hWnd != IntPtr.Zero && hWnd != m.HWnd && Control.FromHandle(hWnd) != null)
-                {
+                if(hWnd != IntPtr.Zero && hWnd != m.HWnd && Control.FromHandle(hWnd) != null) {
                     SendMessage(hWnd, WM_MOUSEWHEEL, m.WParam, m.LParam);
                     return true;
                 }
@@ -55,8 +53,7 @@ namespace hexer
         private void goToToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var gt = new GoToForm();
-            if (gt.ShowDialog() == DialogResult.OK)
-            {
+            if(gt.ShowDialog() == DialogResult.OK) {
                 hexView.NavigateToAddress(gt.Address);
             }
         }
@@ -68,14 +65,11 @@ namespace hexer
         private void searchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var sf = new SearchForm();
-            if (sf.ShowDialog() == DialogResult.OK)
-            {
-                if (hexView.Search(sf.ToSearch))
-                {
+            if(sf.ShowDialog() == DialogResult.OK) {
+                if(hexView.Search(sf.ToSearch)) {
                     statusStrip.Text = "Found search data";
                 }
-                else
-                {
+                else {
                     statusStrip.Text = "No occurance found";
                 }
             }
@@ -96,8 +90,7 @@ namespace hexer
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var fd = new OpenFileDialog();
-            if (fd.ShowDialog() == DialogResult.OK)
-            {
+            if(fd.ShowDialog() == DialogResult.OK) {
                 hexView.FileName = fd.FileName;
             }
         }
@@ -105,8 +98,7 @@ namespace hexer
         {
             var sfd = new SaveFileDialog();
             sfd.FileName = hexView.FileName;
-            if(sfd.ShowDialog() == DialogResult.OK)
-            {
+            if(sfd.ShowDialog() == DialogResult.OK) {
                 hexView.SaveToFile(sfd.FileName);
                 toolStripStatusLabel.Text = "Saved to " + sfd.FileName;
             }
@@ -129,8 +121,7 @@ namespace hexer
         {
             var ofd = new OpenFileDialog();
             ConfigureMarkersDialog(ofd);
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
+            if(ofd.ShowDialog() == DialogResult.OK) {
                 MarkerRepository.Instance.LoadFromFile(ofd.FileName);
                 hexView.Refresh();
                 toolStripStatusLabel.Text = "Loaded Markers from " + ofd.FileName;
@@ -140,15 +131,14 @@ namespace hexer
         {
             var sfd = new SaveFileDialog();
             ConfigureMarkersDialog(sfd);
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
+            if(sfd.ShowDialog() == DialogResult.OK) {
                 MarkerRepository.Instance.SaveToFile(sfd.FileName);
                 toolStripStatusLabel.Text = "Saved Markers to " + sfd.FileName;
             }
         }
         private void saveMarkersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MarkerRepository.Instance.HasFileName()) MarkerRepository.Instance.SaveToFile();
+            if(MarkerRepository.Instance.HasFileName()) MarkerRepository.Instance.SaveToFile();
             else saveMarkersAsToolStripMenuItem_Click(sender, e);
         }
         #endregion

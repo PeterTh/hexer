@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
@@ -40,6 +41,8 @@
             this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.markersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showMarkerWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.openMarkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMarkersAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMarkersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,8 +50,6 @@
             this.hoverAddressInspector = new hexer.AddressInspector();
             this.selectedAddressInspector = new hexer.AddressInspector();
             this.hexView = new hexer.HexView();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.showMarkerWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
@@ -134,7 +135,7 @@
             this.goToSelectedToolStripMenuItem.Name = "goToSelectedToolStripMenuItem";
             this.goToSelectedToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.G)));
-            this.goToSelectedToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.goToSelectedToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.goToSelectedToolStripMenuItem.Text = "Go To Selected";
             this.goToSelectedToolStripMenuItem.Click += new System.EventHandler(this.goToSelectedToolStripMenuItem_Click);
             // 
@@ -142,7 +143,7 @@
             // 
             this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
             this.goToToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.goToToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.goToToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.goToToolStripMenuItem.Text = "Go To ...";
             this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem_Click);
             // 
@@ -150,7 +151,7 @@
             // 
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
             this.searchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
@@ -165,6 +166,18 @@
             this.markersToolStripMenuItem.Name = "markersToolStripMenuItem";
             this.markersToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.markersToolStripMenuItem.Text = "Markers";
+            // 
+            // showMarkerWindowToolStripMenuItem
+            // 
+            this.showMarkerWindowToolStripMenuItem.Name = "showMarkerWindowToolStripMenuItem";
+            this.showMarkerWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
+            this.showMarkerWindowToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
+            this.showMarkerWindowToolStripMenuItem.Text = "Show Marker Window";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(260, 6);
             // 
             // openMarkersToolStripMenuItem
             // 
@@ -240,6 +253,7 @@
             // hexView
             // 
             this.hexView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hexView.FileName = null;
             this.hexView.HoverAddress = -1;
             this.hexView.Location = new System.Drawing.Point(0, 0);
             this.hexView.Name = "hexView";
@@ -250,18 +264,6 @@
             this.hexView.HoverAddressChanged += new System.EventHandler(this.hexView_HoverAddressChanged);
             this.hexView.SelectedAddressChanged += new System.EventHandler(this.hexView_SelectedAddressChanged);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(260, 6);
-            // 
-            // showMarkerWindowToolStripMenuItem
-            // 
-            this.showMarkerWindowToolStripMenuItem.Name = "showMarkerWindowToolStripMenuItem";
-            this.showMarkerWindowToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.showMarkerWindowToolStripMenuItem.Size = new System.Drawing.Size(263, 22);
-            this.showMarkerWindowToolStripMenuItem.Text = "Show Marker Window";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -270,6 +272,7 @@
             this.Controls.Add(this.mainSplitContainer);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.Text = "Hexer";

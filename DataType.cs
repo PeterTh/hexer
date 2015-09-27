@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -59,7 +60,13 @@ namespace hexer
 
         public DataFragment EncodeString(int address, string str)
         {
-            return encoder(address, str);
+            DataFragment df = new DataFragment();
+            try {
+                df = encoder(address, str);
+            } catch(Exception) {
+                MessageBox.Show("Error converting string \"" + str + "\" to type " + Name, "Conversion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return df;
         }
 
         public static DataType CreateSeparator(string caption)
